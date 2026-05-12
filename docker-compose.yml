@@ -1,0 +1,68 @@
+version: '3.9'
+
+services:
+
+  backend:
+    build:
+      context: ./apps/backend
+    container_name: interview_backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./apps/backend:/app
+      - /app/node_modules
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=admin
+      - DB_PASSWORD=admin
+      - DB_NAME=interview_platform
+    env_file:
+      - .env
+    develop:
+      watch:
+        - action: sync
+          path: ./app/backend
+          target: /app
+          ignore:
+            - dist
+        - action: rebuild
+          path: ./app/backend
+          target: /app
+    depends_on:
+      - postgres
+      - redis
+
+  # frontend:
+  #   build:
+  #     context: ./apps/frontend
+  #   container_name: interview_frontend
+  #   ports:
+  #     - "5173:5173"
+  #   volumes:
+  #     - ./apps/frontend:/app
+  #     - /app/node_modules
+
+  postgres:
+    image: postgres:16
+    container_name: interview_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: interview_platform
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  redis:
+    image: redis:7
+    container_name: interview_redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
