@@ -35,9 +35,32 @@ export class AuthService {
         });
         return user;
     }
+    async resendOtp(email: string) {
+        const user = await this.authRepository.findUserByEmail(email);
+        if (!user) {
+            throw new Error('User not found');
+        }
+        if (user.is_verified) {
+            throw new Error('User already verified');
+        }
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const redis = await RedisSingleton.getInstance();
+        await redis.set(`otp:${email}`, otp, {
+            EX: 300,
+        });
+        const transporter = MailService.getInstance();
+        await transporter.sendMail({
+            from: process.env.MAIL_USER,
+            to: email,
+            subject: "OTP Verification",
+            text: `Your OTP is ${otp}`,
+        });
+    }
     async verifyOtp(email: string, otp: string) {
         const redis = await RedisSingleton.getInstance();
         const storedOtp = await redis.get(`otp:${email}`);
+        console.log("otp", storedOtp)
+        console.log("email", email)
         if (!storedOtp) {
             throw new Error('OTP expired');
         }
