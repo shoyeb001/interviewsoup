@@ -161,7 +161,44 @@ Verifies email OTP and returns JWT token.
 
 ---
 
-# 3. Login
+# 3. Resend Otp
+
+## Endpoint
+
+```http
+POST /api/v1/auth/resend-otp
+```
+
+## Description
+
+Resend otp.
+
+---
+
+## Request Body
+
+```json
+{
+  "email": "john@example.com",
+  "otp": "123456"
+}
+```
+
+---
+
+## Fields
+
+| Field | Type | Required | Description |
+|------|------|----------|-------------|
+| email | string | YES | User email |
+
+
+---
+
+
+---
+
+# 4. Login
 
 ## Endpoint
 
@@ -198,6 +235,8 @@ Authenticates verified user.
 
 
 ---
+
+
 
 # Authentication Flow
 

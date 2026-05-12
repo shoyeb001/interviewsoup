@@ -6,7 +6,9 @@ export class MailService {
     public static getInstance(): nodemailer.Transporter {
         if (!this.transporter) {
             this.transporter = nodemailer.createTransport({
-                service: 'gmail',
+                secure: true,
+                host: "smtp.gmail.com",
+                port: 465,
                 auth: {
                     user: process.env.MAIL_USER,
                     pass: process.env.MAIL_PASS

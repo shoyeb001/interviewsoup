@@ -42,6 +42,23 @@ export class AuthController {
         }
     }
 
+    resendOtp = async (req: Request, res: Response) => {
+        try {
+            const { email } = req.body;
+            await this.authService.resendOtp(email);
+            return res.status(200).json({
+                success: true,
+                message: "OTP verified successfully.",
+                data: {}
+            })
+        } catch (error: any) {
+            res.status(400).json({
+                success: false,
+                message: error.message
+            })
+        }
+    }
+
     login = async (req: Request, res: Response) => {
         try {
             const { email, password } = req.body;
