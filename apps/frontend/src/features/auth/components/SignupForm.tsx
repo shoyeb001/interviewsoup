@@ -6,13 +6,16 @@ import PasswordInput from "./PasswordInput";
 
 
 import { registerSchema, type RegisterSchemaType } from "../schemas/auth.schema";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { CodeIcon } from "lucide-react";
-
+import { useRegisterMutation } from "@/services/authApi";
+import notification from "@/shared/toast";
 export default function SignupForm() {
+    const [signup, { isLoading }] = useRegisterMutation();
+    const navigate = useNavigate();
     const {
         register,
         handleSubmit,
@@ -20,9 +23,19 @@ export default function SignupForm() {
     } = useForm<RegisterSchemaType>({
         resolver: zodResolver(registerSchema),
     });
-    const isLoading = false;
     const onSubmit = async (data: RegisterSchemaType) => {
-        console.log(data);
+        try {
+            const userData = {
+                ...data,
+                role: "interviewer"
+            }
+            const response = await signup(userData).unwrap();
+            console.log(response);
+            notification("Register successful", "success");
+            navigate("/otp-verify");
+        } catch (error) {
+            notification("Registration failed", "error");
+        }
     }
     return (
         <div className="w-full max-w-[560px]">
@@ -112,12 +125,12 @@ export default function SignupForm() {
 
                     <PasswordInput
                         placeholder="••••••••"
-                        {...register("password")}
+                        {...register("confirmPassword")}
                     />
 
-                    {errors.password && (
+                    {errors.confirmPassword && (
                         <p className="text-sm text-red-500">
-                            {errors.password.message}
+                            {errors.confirmPassword.message}
                         </p>
                     )}
                 </div>
@@ -136,7 +149,7 @@ export default function SignupForm() {
                     disabled={isLoading}
                     className="h-12 w-full rounded-xl bg-[#b54100] text-lg cursor-pointer font-semibold hover:bg-[#9d3900]"
                 >
-                    {isLoading ? "Signing In..." : "Sign In"}
+                    {isLoading ? "Creating account..." : "Register"}
                 </Button>
             </form>
             {/* <div className="mt-10">

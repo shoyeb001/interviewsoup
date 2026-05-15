@@ -1,14 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-
-
+import { useNavigate } from "react-router";
 import PasswordInput from "./PasswordInput";
-
 import {
     loginSchema,
     type LoginSchemaType,
@@ -17,11 +13,11 @@ import { useLoginMutation } from "@/services/authApi";
 import SocialAuth from "./SocialButton";
 import { Link } from "react-router";
 import { CodeIcon } from "lucide-react";
-
+import notification from "@/shared/toast";
 
 export default function LoginForm() {
     const [login, { isLoading }] = useLoginMutation();
-
+    const navigate = useNavigate();
     const {
         register,
         handleSubmit,
@@ -33,12 +29,11 @@ export default function LoginForm() {
     const onSubmit = async (data: LoginSchemaType) => {
         try {
             const response = await login(data).unwrap();
-
             console.log(response);
-
-            toast.success("Login successful");
+            notification("Login successful", "success");
+            navigate("/dashboard");
         } catch (error: any) {
-            toast.error(error?.data?.message || "Login failed");
+            notification(error?.data?.message, "error");
         }
     };
     return (

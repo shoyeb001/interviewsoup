@@ -1,5 +1,5 @@
 import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Input } from "@/components/ui/input";
 
@@ -10,19 +10,18 @@ interface Props {
 }
 
 export default function PasswordInput({
-    value,
-    onChange,
-    placeholder,
+    ...props
 }: Props) {
     const [showPassword, setShowPassword] = useState(false);
-
+    useEffect(() => {
+        console.log(props.value)
+    }, [props.value])
     return (
         <div className="relative">
             <Input
-                value={value}
-                onChange={onChange}
+                {...props}
                 type={showPassword ? "text" : "password"}
-                placeholder={placeholder}
+
                 className="h-10 rounded-xl border-[#e8d7cf] pr-12 text-lg shadow-none focus-visible:ring-1 focus-visible:ring-[#b54100]"
             />
 

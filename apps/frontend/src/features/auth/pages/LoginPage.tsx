@@ -21,7 +21,7 @@ function LoginPage() {
           </div>
         </div>
       </div>
-      <div className="relative   hidden bg-muted lg:block">
+      <div className="relative hidden bg-muted lg:block">
         <div className='min-h-svh flex items-center justify-center'>
           <AuthInfo />
         </div>
