@@ -18,7 +18,7 @@ export class AuthService {
         const user = await this.authRepository.createUser(
             name,
             email,
-            password,
+            hashedPassword,
             role
         );
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -33,7 +33,13 @@ export class AuthService {
             subject: "OTP Verification",
             text: `Your OTP is ${otp}`,
         });
-        return user;
+        const token = jwt.sign({
+            id: user.id,
+            role: user.role
+        }, process.env.JWT_SECRET!, { expiresIn: '7d' });
+        return {
+            user, token
+        };
     }
     async resendOtp(email: string) {
         const user = await this.authRepository.findUserByEmail(email);
