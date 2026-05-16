@@ -26,7 +26,15 @@ export const authApi = baseApi.injectEndpoints({
             }),
         }),
 
+        resendOtp: builder.mutation({
+            query: (data) => ({
+                url: "/auth/resend-otp",
+                method: "POST",
+                body: data
+            }),
+        }),
+
     })
 })
 
-export const { useRegisterMutation, useLoginMutation, useVerifyOtpMutation } = authApi;
+export const { useRegisterMutation, useLoginMutation, useVerifyOtpMutation, useResendOtpMutation } = authApi;

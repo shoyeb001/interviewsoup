@@ -1,10 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-
 import PasswordInput from "./PasswordInput";
-
-
 import { registerSchema, type RegisterSchemaType } from "../schemas/auth.schema";
 import { Link, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
@@ -13,9 +9,14 @@ import { Input } from "@/components/ui/input";
 import { CodeIcon } from "lucide-react";
 import { useRegisterMutation } from "@/services/authApi";
 import notification from "@/shared/toast";
+import { useSelector, useDispatch } from "react-redux";
+import { type TRegisterResponse } from "../types/TRegisterResponse";
+import { addUser } from "@/app/slices/userSlice";
 export default function SignupForm() {
     const [signup, { isLoading }] = useRegisterMutation();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     const {
         register,
         handleSubmit,
@@ -29,9 +30,16 @@ export default function SignupForm() {
                 ...data,
                 role: "interviewer"
             }
-            const response = await signup(userData).unwrap();
+            const response: TRegisterResponse = await signup(userData).unwrap();
             console.log(response);
             notification("Register successful", "success");
+            const user = response.data.user;
+            dispatch(addUser({
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                isVerified: user.is_verified
+            }));
             navigate("/otp-verify");
         } catch (error) {
             notification("Registration failed", "error");

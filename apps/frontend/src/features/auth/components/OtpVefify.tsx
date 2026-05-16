@@ -1,14 +1,17 @@
-import React, { useRef } from 'react';
+import React, { use, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { Shield, Lock, RefreshCw, ArrowLeft, HelpCircle } from 'lucide-react';
 import type { FormValues } from '../schemas/auth.schema';
-import { useVerifyOtpMutation } from '@/services/authApi';
+import { useResendOtpMutation, useVerifyOtpMutation } from '@/services/authApi';
 import notification from '@/shared/toast';
 import { useNavigate } from 'react-router';
-
+import { useSelector, useDispatch } from 'react-redux';
 export default function OtpVerify() {
     const [verifyOtp, { isLoading }] = useVerifyOtpMutation();
+    const [resendOtp, { isLoading: isResendLoading }] = useResendOtpMutation();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { email } = useSelector((state: any) => state.user);
     const { handleSubmit, setValue, watch } = useForm<FormValues>({
         defaultValues: {
             otp: ['', '', '', '', '', ''],
@@ -40,11 +43,20 @@ export default function OtpVerify() {
         }
     };
 
+    const submitResendOtp = async () => {
+        try {
+            const response = await resendOtp({ email: email }).unwrap();
+            notification("Otp resent Successfully", "success");
+        } catch (error: any) {
+            notification("Failed to send otp.", error)
+        }
+    }
+
     const onSubmit = async (data: FormValues) => {
         const otpCode = data.otp.join('');
         console.log('Submitted OTP:', otpCode);
         try {
-            const response = await verifyOtp({ otp: otpCode }).unwrap();
+            const response = await verifyOtp({ otp: otpCode, email: email }).unwrap();
             console.log('OTP verification successful:', response);
             notification("Otp verified Successfully", "success")
             navigate("/dashboard");
@@ -102,7 +114,7 @@ export default function OtpVerify() {
                             type="submit"
                             className="w-full bg-[#a64010] text-white py-3 rounded text-sm font-medium hover:bg-[#8c350c] transition-colors mb-8 shadow-sm"
                         >
-                            Verify
+                            {isLoading || isResendLoading ? "Verifying..." : "Verify OTP"}
                         </button>
                     </form>
 
@@ -111,7 +123,8 @@ export default function OtpVerify() {
                         <p className="text-sm text-gray-500 mb-2">Didn't receive the code?</p>
                         <button
                             type="button"
-                            className="text-[#a64010] text-sm font-medium flex items-center justify-center gap-1.5 mx-auto hover:text-[#8c350c] transition-colors"
+                            className="text-[#a64010] cursor-pointer text-sm font-medium flex items-center justify-center gap-1.5 mx-auto hover:text-[#8c350c] transition-colors"
+                            onClick={submitResendOtp}
                         >
                             <RefreshCw className="w-3.5 h-3.5" />
                             Resend OTP

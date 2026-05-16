@@ -7,12 +7,13 @@ export class AuthController {
 
     register = async (req: Request, res: Response) => {
         try {
-            const user = await this.authService.register(req.body);
+            const {user, token} = await this.authService.register(req.body);
             res.status(201).json({
                 success: true,
                 message: "User registered successfully.",
                 data: {
-                    user: user
+                    user: user,
+                    access_token: token
                 }
             });
         } catch (error: any) {
