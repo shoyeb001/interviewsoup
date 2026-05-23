@@ -24,14 +24,14 @@ const OtpLayout = ({ children }: { children: ReactNode }) => {
                 name: name,
                 email,
                 role,
-                is_verified
+                isVerified: is_verified
             }))
         }
     }, [data])
     if (token === "") {
         return <Navigate to="/" replace />
     } else if (token !== "" && isVerified) {
-        return <Navigate to="/dashbboard" replace />
+        return <Navigate to="/dashboard" replace />
     }
 
     return children;
