@@ -31,6 +31,7 @@ export default function SignupForm() {
                 role: "interviewer"
             }
             const response: TRegisterResponse = await signup(userData).unwrap();
+            localStorage.setItem("token", response.data.access_token);
             console.log(response);
             notification("Register successful", "success");
             const user = response.data.user;
@@ -38,6 +39,7 @@ export default function SignupForm() {
                 name: user.name,
                 email: user.email,
                 role: user.role,
+                token: response.data.access_token,
                 isVerified: user.is_verified
             }));
             navigate("/otp-verify");

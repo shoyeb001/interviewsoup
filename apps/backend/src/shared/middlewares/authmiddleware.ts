@@ -2,9 +2,7 @@ import jwt, { type JwtPayload } from "jsonwebtoken";
 import { type NextFunction, type Response, type Request } from "express";
 import { UserService } from "../../modules/user/services/user.service.ts";
 import { type AuthRequest } from "../interfaces/userInterface.ts";
-// export interface AuthRequest extends Request {
-//   user?: any;
-// }
+
 export const authMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
     const userService = new UserService();
     try {

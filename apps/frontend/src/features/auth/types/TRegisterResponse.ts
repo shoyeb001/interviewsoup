@@ -1,5 +1,6 @@
 export type TRegisterResponse = {
     data:{
+        access_token: string,
         user:{
             created_at: string;
             email: string;

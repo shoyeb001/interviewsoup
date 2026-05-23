@@ -1,3 +1,6 @@
+import AuthLayout from "@/components/AuthLayout";
+import OtpLayout from "@/components/OtpLayout";
+import OtpVerify from "@/features/auth/components/OtpVefify";
 import LoginPage from "@/features/auth/pages/LoginPage";
 import SignupPage from "@/features/auth/pages/SignupPage";
 import VerifyOtpPage from "@/features/auth/pages/VerifyOtpPage";
@@ -14,6 +17,12 @@ export const routerProvider = createBrowserRouter([
     },
     {
         path: "/otp-verify",
-        element: <VerifyOtpPage />
+        element: (
+            <>
+                <OtpLayout>
+                    <OtpVerify />
+                </OtpLayout>
+            </>
+        )
     }
 ])
