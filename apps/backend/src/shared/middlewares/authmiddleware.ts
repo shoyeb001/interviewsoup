@@ -23,7 +23,7 @@ export const authMiddleware = async (req: AuthRequest, res: Response, next: Next
         const userId = decoded.id;
         console.log("Decoded JWT:", decoded);
         const user = await userService.getUser(userId);
-        req.user = user;
+        req.user = { ...user, id: userId };
         next();
     } catch (error) {
         return res.status(403).json(
