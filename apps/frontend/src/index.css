@@ -131,3 +131,22 @@
     @apply font-sans;
     }
 }
+.custom-calendar .rbc-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+}
+
+.custom-calendar .rbc-btn-group button {
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  padding: 6px 12px;
+  background: white;
+  cursor: pointer;
+}
+
+.custom-calendar .rbc-toolbar-label {
+  font-size: 18px;
+  font-weight: 600;
+}

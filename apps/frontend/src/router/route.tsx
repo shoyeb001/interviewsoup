@@ -6,6 +6,7 @@ import SignupPage from "@/features/auth/pages/SignupPage";
 import VerifyOtpPage from "@/features/auth/pages/VerifyOtpPage";
 import DashboardLayout from "@/features/dashboard/layouts/DashboardLayout";
 import Dashboard from "@/features/dashboard/pages/Dashboard";
+import InterviewLivePage from "@/features/interview/pages/InterviewLivePage";
 import { createBrowserRouter } from "react-router";
 
 export const routerProvider = createBrowserRouter([
@@ -40,5 +41,11 @@ export const routerProvider = createBrowserRouter([
                 )
             }
         ]
+    },
+    {
+        path: "/interview-live",
+        element: (
+            <InterviewLivePage />
+        )
     }
 ])

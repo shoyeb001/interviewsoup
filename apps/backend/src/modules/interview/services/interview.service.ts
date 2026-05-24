@@ -63,4 +63,17 @@ export class InterviewService {
     });
     return interview;
   }
+
+  async getUpcomingInterviews(
+    interviewerId: string
+  ) {
+    return await this.interviewRepo.getUpcomingInterviews(interviewerId);
+  }
+
+  async getAllInterviews(
+    interviewerId: string
+  ) {
+    return await this.interviewRepo.getAllInterviews(interviewerId)
+  }
+
 }

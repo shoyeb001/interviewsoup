@@ -8,8 +8,16 @@ export const interviewApi = baseApi.injectEndpoints({
                 method: "POST",
                 body: data
             })
-        })
+        }),
+        getAllInterviews: builder.query({
+            query: () => '/interview',
+            providesTags: ["Interviews"]
+        }),
+        getUpcomingInterviews: builder.query({
+            query: () => '/interview/upcoming',
+            providesTags: ["CurrentInterviews"]
+        }),
     })
 })
 
-export const { useScheduleInterviewMutation } = interviewApi;
+export const { useScheduleInterviewMutation, useGetAllInterviewsQuery, useGetUpcomingInterviewsQuery } = interviewApi;

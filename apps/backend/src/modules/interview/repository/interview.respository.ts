@@ -1,9 +1,9 @@
 import { DatabasePool } from "../../../core/database/pool.ts";
 
-export class InterviewRepository{
-    private pool = DatabasePool.getPool();
-    async createInterview(data:any){
-         const query = `
+export class InterviewRepository {
+  private pool = DatabasePool.getPool();
+  async createInterview(data: any) {
+    const query = `
       INSERT INTO interviews (
         interviewer_id,
         candidate_name,
@@ -20,7 +20,7 @@ export class InterviewRepository{
       RETURNING *
     `;
 
-     const values = [
+    const values = [
       data.interviewerId,
       data.candidateName,
       data.candidateEmail,
@@ -32,9 +32,41 @@ export class InterviewRepository{
     ];
 
     const result = await this.pool.query(
-        query,
-        values
+      query,
+      values
     );
     return result.rows[0];
-    }
+  }
+
+  async getAllInterviews(interviewerId: string) {
+    const query = `
+        SELECT * FROM interviews WHERE interviewer_id = $1 
+        ORDER BY created_at DESC
+      `
+    const result = await this.pool.query(
+      query,
+      [interviewerId]
+    );
+    return result.rows;
+  }
+
+  async getUpcomingInterviews(interviewerId: string) {
+    const query = `
+    SELECT *
+    FROM interviews
+    WHERE interviewer_id = $1
+    AND interview_date >= CURRENT_DATE
+    AND status = 'SCHEDULED'
+    ORDER BY interview_date ASC,
+             interview_time ASC
+  `;
+
+    const result = await this.pool.query(
+      query,
+      [interviewerId]
+    );
+
+    return result.rows;
+  }
+
 }

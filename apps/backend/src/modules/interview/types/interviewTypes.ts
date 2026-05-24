@@ -8,3 +8,4 @@ export type TInterview = {
     interviewDate: string;
     interviewTime: string;
 }
+

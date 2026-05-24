@@ -3,8 +3,12 @@ import AddInterviewForm from '../components/AddInterviewForm';
 import { StatCard } from '../components/StatCard';
 import { QueueCard } from '../components/QueueCard';
 import { TrendingUp, Smile } from 'lucide-react';
+import { useGetUpcomingInterviewsQuery } from '@/services/interviewApi';
+import type { TUpcomingInterview } from '../types/dashboard.types';
+import { extractCalendarEvents, getInterviewTimeLeft } from '@/lib/utils';
 
 export default function Dashboard() {
+    const { data: upcomingInterviews, isLoading, isSuccess } = useGetUpcomingInterviewsQuery({});
     return (
         <>
             <div className="mb-8">
@@ -16,11 +20,14 @@ export default function Dashboard() {
 
                 <div className="flex-1 flex flex-col gap-6">
 
-                    <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm h-[320px]">
+                    <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm ">
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="font-medium">Weekly Schedule</h2>
+                            <h2 className="font-medium">Scheduled Interviews</h2>
                         </div>
-                        <WeeklyCalendarView />
+                        {
+                            isSuccess && <WeeklyCalendarView interviews={extractCalendarEvents(upcomingInterviews.data.upcomingInterviews)} />
+
+                        }
                     </div>
 
                     {/* Stats Row */}
@@ -43,21 +50,18 @@ export default function Dashboard() {
                         <h3 className="font-medium mb-2 mt-4">Today's Queue</h3>
                         <p className="text-sm text-slate-500 mb-4">Your immediate focus area for today's sessions.</p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <QueueCard
-                                name="Jamie L."
-                                role="Senior Engineer @ Stripe"
-                                status="LIVE NOW"
-                                statusColor="bg-green-100 text-green-700"
-                                room="Room: 402-A"
-                                avatar="https://i.pravatar.cc/150?u=jamie"
-                            />
-                            <QueueCard
-                                name="Sam T."
-                                role="Product Designer @ Meta"
-                                status="Starting in 2h 45m"
-                                statusColor="text-slate-500"
-                                avatar="https://i.pravatar.cc/150?u=sam"
-                            />
+                            {
+                                isSuccess && upcomingInterviews.data.upcomingInterviews.map((interview: TUpcomingInterview) => (
+                                    <QueueCard
+                                        name={interview?.candidate_name}
+                                        role={interview?.agenda}
+                                        status={getInterviewTimeLeft(interview?.interview_date, interview?.interview_time)}
+                                        statusColor="bg-green-100 text-green-700"
+                                        room={interview?.room_id}
+                                        avatar="https://i.pravatar.cc/150?u=jamie"
+                                    />
+                                ))
+                            }
                         </div>
                     </div>
                 </div>

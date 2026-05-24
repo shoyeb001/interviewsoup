@@ -14,5 +14,16 @@ router.post(
     authMiddleware,
     interviewController.scheduleInterview
 );
+router.get(
+    "/",
+    authMiddleware,
+    interviewController.getAllInterviews
+);
+
+router.get(
+    "/upcoming",
+    authMiddleware,
+    interviewController.getUpcomingInterviews
+);
 
 export default router;

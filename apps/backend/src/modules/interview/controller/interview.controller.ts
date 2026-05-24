@@ -51,4 +51,56 @@ export class InterviewController {
             })
         }
     }
+    getAllInterviews = async (
+        req: AuthRequest,
+        res: Response
+    ): Promise<void> => {
+
+        try {
+            const interviews =
+                await this.interviewService
+                    .getAllInterviews(
+                        req?.user?.id!
+                    );
+
+            res.status(200).json({
+                success: true,
+                message: "All interviews fetched.",
+                data: {
+                    interviews
+                }
+            });
+
+        } catch (error: any) {
+
+            res.status(500).json({
+                success: false,
+                message:
+                    error.message ||
+                    "Failed to fetch interviews",
+                data: null
+            });
+
+        }
+    };
+    getUpcomingInterviews = async (req: AuthRequest, res: Response) => {
+        try {
+            const interviews = await this.interviewService.getUpcomingInterviews(
+                req?.user?.id!
+            );
+            res.status(200).json({
+                success: true,
+                message: "Upcoming interviews fetched successfully.",
+                data: {
+                    upcomingInterviews: interviews
+                }
+            })
+        } catch (error: any) {
+            res.status(500).json({
+                success: false,
+                message: error.message || "Failed to fetch upcoming interviews.",
+                data: null
+            })
+        }
+    }
 }

@@ -1,62 +1,74 @@
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-import {format} from 'date-fns/format';
-import {parse} from 'date-fns/parse';
-import {startOfWeek} from 'date-fns/startOfWeek';
-import {getDay} from 'date-fns/getDay';
-import {enUS} from 'date-fns/locale/en-US';
+import { format } from 'date-fns/format';
+import { parse } from 'date-fns/parse';
+import { startOfWeek } from 'date-fns/startOfWeek';
+import { getDay } from 'date-fns/getDay';
+import { enUS } from 'date-fns/locale/en-US';
+import { ArrowLeft, ArrowRight, NotepadText } from 'lucide-react';
+import { useState } from 'react';
+import InterviewPopup from './InterviewDialog';
+import type { TInterviewEvent } from '../types/dashboard.types';
 
-const locales = { 'en-US': enUS };
-const localizer = dateFnsLocalizer({ format, parse, startOfWeek, getDay, locales });
+const locales = {
+    'en-US': enUS,
+};
 
-// Mock data based on the screenshot
+const localizer = dateFnsLocalizer({
+    format,
+    parse,
+    startOfWeek,
+    getDay,
+    locales,
+});
+
 const myEventsList = [
     {
         title: '10:00 AM - Alex R. (Google)',
-        start: new Date(2026, 4, 13, 10, 0), // Adjust month/year to match your current week
-        end: new Date(2026, 4, 13, 11, 0),
-        bgColor: '#d2e3fc',
-        textColor: '#1e40af'
-    },
-    {
-        title: '02:30 PM - Jamie L. (Stripe)',
-        start: new Date(2026, 4, 15, 14, 30),
-        end: new Date(2026, 4, 15, 15, 30),
-        bgColor: '#bd5118',
-        textColor: '#ffffff'
-    },
-    {
-        title: '04:00 PM - Sam T. (Meta)',
-        start: new Date(2026, 4, 15, 16, 0),
-        end: new Date(2026, 4, 15, 17, 0),
+        start: new Date(2026, 4, 24, 10, 0),
+        end: new Date(2026, 4, 24, 11, 0),
         bgColor: '#0e7cd4',
-        textColor: '#ffffff'
-    }
+        textColor: '#1e40af',
+    },
 ];
 
-export default function WeeklyCalendarView() {
+export default function WeeklyCalendarView({ interviews }: { interviews: any }) {
+    const [open, setOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState<any>(null);
+    const handleSelectEvent = (event: any) => {
+        setSelectedEvent(event);
+        setOpen(true);
+    };
+
+
+    console.log(interviews)
     return (
-        <div className="h-[240px] w-full font-sans">
+        <div className="h-[700px] w-full relative">
             <Calendar
                 localizer={localizer}
-                events={myEventsList}
-                defaultView="week"
-                views={['week']}
-                toolbar={false} // Hiding default toolbar to match UI (custom buttons are above in parent)
-                step={60}
-                showMultiDayTimes
+                events={interviews}
+                startAccessor="start"
+                endAccessor="end"
+                defaultView="month"
+                views={['month', 'week', 'day']}
+                onSelectEvent={handleSelectEvent}
+
+                toolbar={true}
+                popup
                 eventPropGetter={(event) => ({
                     style: {
-                        backgroundColor: event.bgColor,
-                        color: event.textColor,
-                        borderRadius: '4px',
-                        border: 'none',
-                        fontSize: '11px',
-                        padding: '2px 4px',
-                        fontWeight: '500'
-                    }
+                        backgroundColor: "#2563eb",
+                        borderRadius: "10px",
+                        border: "none",
+                        padding: "4px 8px",
+                        color: "white",
+                        fontSize: "12px",
+                        fontWeight: 500,
+                    },
                 })}
             />
+            <InterviewPopup isOpen={open} onOpenChange={setOpen} data={selectedEvent?.resource} />
         </div>
     );
 }

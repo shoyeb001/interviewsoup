@@ -12,9 +12,14 @@ export const baseApi = createApi({
                 headers.set("authorization", `Bearer ${token}`);
             }
             return headers;
-        }
+        },
     }),
-
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+    tagTypes: [
+        "Interviews",
+        "CurrentInterviews"
+    ],
     endpoints: () => ({}),
 });
 
