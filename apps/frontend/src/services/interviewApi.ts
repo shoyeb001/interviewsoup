@@ -7,7 +7,8 @@ export const interviewApi = baseApi.injectEndpoints({
                 url: "/interview/schedule",
                 method: "POST",
                 body: data
-            })
+            }),
+            invalidatesTags: ["Interviews", "CurrentInterviews"]
         }),
         getAllInterviews: builder.query({
             query: () => '/interview',

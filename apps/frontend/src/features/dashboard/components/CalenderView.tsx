@@ -42,6 +42,7 @@ export default function WeeklyCalendarView({ interviews }: { interviews: any }) 
     };
 
 
+
     console.log(interviews)
     return (
         <div className="h-[700px] w-full relative">
@@ -58,7 +59,7 @@ export default function WeeklyCalendarView({ interviews }: { interviews: any }) 
                 popup
                 eventPropGetter={(event) => ({
                     style: {
-                        backgroundColor: "#2563eb",
+                        backgroundColor: event.bgColor,
                         borderRadius: "10px",
                         border: "none",
                         padding: "4px 8px",

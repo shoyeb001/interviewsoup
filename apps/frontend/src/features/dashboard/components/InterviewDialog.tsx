@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Clock, LayoutList, Video } from "lucide-react";
+import { getInterviewTimeLeft } from "@/lib/utils";
 
 interface InterviewPopupProps {
     isOpen: boolean;
@@ -14,6 +15,10 @@ interface InterviewPopupProps {
 }
 
 export default function InterviewPopup({ isOpen, onOpenChange, data }: InterviewPopupProps) {
+    function isExpire(date: any) {
+        const now = new Date();
+        return now.getDate() > date;
+    }
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[425px] p-6 rounded-2xl gap-0">
@@ -22,7 +27,7 @@ export default function InterviewPopup({ isOpen, onOpenChange, data }: Interview
                         {data?.candidate_name}
                     </DialogTitle>
                     <p className="text-sm text-muted-foreground mt-1">
-                        {data?.agenda} @ {data?.company_name}
+                        {data?.candidate_email}
                     </p>
                 </DialogHeader>
 
@@ -31,7 +36,7 @@ export default function InterviewPopup({ isOpen, onOpenChange, data }: Interview
                     <div className="flex items-center gap-3 text-gray-700">
                         <Clock className="w-5 h-5 text-[#d96b27]" strokeWidth={2} />
                         <span className="text-sm font-medium">
-                            {data?.candidate_email}
+                            {getInterviewTimeLeft(data?.interview_date, data?.interview_time)}
                         </span>
                     </div>
 
@@ -56,12 +61,24 @@ export default function InterviewPopup({ isOpen, onOpenChange, data }: Interview
 
                 {/* Action Buttons */}
                 <div className="flex flex-col gap-3">
-                    <Button
-                        className="w-full h-12 bg-[#e05d14] hover:bg-[#c95210] text-white rounded-lg text-base font-semibold shadow-none flex items-center justify-center gap-2"
-                    >
-                        <Video className="w-5 h-5" />
-                        Join Call
-                    </Button>
+                    {
+                        isExpire(data?.interview_date) ? (
+                            <Button
+                                className="w-full h-12 bg-[#e05d14] hover:bg-[#c95210] text-white rounded-lg text-base font-semibold shadow-none flex items-center justify-center gap-2"
+                            >
+                                <Video className="w-5 h-5" />
+                                Join Call
+                            </Button>
+                        ) : (
+                            <Button
+                                className="w-full h-12 bg-[#e2e8f0] hover:bg-[#e2e8f0] text-white rounded-lg text-base font-semibold shadow-none flex items-center justify-center gap-2"
+                            >
+                                <Video className="w-5 h-5" />
+                                Interview Date Expired
+                            </Button>
+                        )
+                    }
+
                     {/* <Button
                         variant="outline"
                         className="w-full h-12 rounded-lg text-base font-semibold border-gray-300 text-gray-700 hover:bg-gray-50"

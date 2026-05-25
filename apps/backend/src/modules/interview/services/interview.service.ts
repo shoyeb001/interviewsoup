@@ -8,7 +8,7 @@ export class InterviewService {
       data
     );
     const interviewLink = `
-      http://localhost:5173/interview/${interview.room_id}
+      http://localhost:5173/interview/lobby/${interview.room_id}
     `;
     const transporter = MailService.getInstance();
     await transporter.sendMail({
@@ -74,6 +74,18 @@ export class InterviewService {
     interviewerId: string
   ) {
     return await this.interviewRepo.getAllInterviews(interviewerId)
+  }
+
+  async getInterviewByRoomId(roomId: string) {
+    const interview = await this.interviewRepo.getInterviewByRoomId(
+      roomId
+    );
+    if (!interview) {
+      throw new Error(
+        "Interview not found"
+      );
+    }
+    return interview;
   }
 
 }

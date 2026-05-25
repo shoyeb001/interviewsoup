@@ -103,4 +103,33 @@ export class InterviewController {
             })
         }
     }
+
+    getInterviewByRoomId = async (req: Request, res: Response) => {
+        try {
+            const { roomId } = req.params;
+            if (!roomId || typeof roomId !== "string") {
+                res.status(400).json({
+                    success: false,
+                    message: "Invalid roomId"
+                });
+                return;
+            }
+            const interview = await this.interviewService.getInterviewByRoomId(
+                roomId
+            );
+            res.status(200).json({
+                success: true,
+                message: "Interview fetched successfully.",
+                data: {
+                    interview
+                }
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                success: false,
+                message: error.message || "Failed to fetch interview",
+                data: null
+            });
+        }
+    }
 }

@@ -26,4 +26,5 @@ router.get(
     interviewController.getUpcomingInterviews
 );
 
+router.get("/details/roomId/:roomId", interviewController.getInterviewByRoomId);
 export default router;

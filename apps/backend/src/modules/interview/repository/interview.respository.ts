@@ -69,4 +69,52 @@ export class InterviewRepository {
     return result.rows;
   }
 
+  async getInterviewByRoomId(
+    roomId: string
+  ) {
+
+    const query = `
+    SELECT
+
+      interviews.id,
+      interviews.room_id,
+
+      interviews.candidate_name,
+      interviews.candidate_email,
+
+      interviews.company_name,
+
+      interviews.agenda,
+
+      interviews.round_no,
+
+      interviews.interview_date,
+      interviews.interview_time,
+
+      interviews.status,
+
+      interviews.created_at,
+
+      users.id AS interviewer_id,
+      users.name AS interviewer_name,
+      users.email AS interviewer_email
+
+    FROM interviews
+
+    INNER JOIN users
+      ON interviews.interviewer_id = users.id
+
+    WHERE interviews.room_id = $1
+
+    LIMIT 1
+  `;
+
+    const result = await this.pool.query(
+      query,
+      [roomId]
+    );
+
+    return result.rows[0];
+  }
+
 }

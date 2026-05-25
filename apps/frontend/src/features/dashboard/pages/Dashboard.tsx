@@ -3,12 +3,13 @@ import AddInterviewForm from '../components/AddInterviewForm';
 import { StatCard } from '../components/StatCard';
 import { QueueCard } from '../components/QueueCard';
 import { TrendingUp, Smile } from 'lucide-react';
-import { useGetUpcomingInterviewsQuery } from '@/services/interviewApi';
+import { useGetAllInterviewsQuery, useGetUpcomingInterviewsQuery } from '@/services/interviewApi';
 import type { TUpcomingInterview } from '../types/dashboard.types';
 import { extractCalendarEvents, getInterviewTimeLeft } from '@/lib/utils';
 
 export default function Dashboard() {
     const { data: upcomingInterviews, isLoading, isSuccess } = useGetUpcomingInterviewsQuery({});
+    const { data: interviews, isSuccess: interviewSuccess, isLoading: interviewLoading } = useGetAllInterviewsQuery({});
     return (
         <>
             <div className="mb-8">
@@ -25,7 +26,7 @@ export default function Dashboard() {
                             <h2 className="font-medium">Scheduled Interviews</h2>
                         </div>
                         {
-                            isSuccess && <WeeklyCalendarView interviews={extractCalendarEvents(upcomingInterviews.data.upcomingInterviews)} />
+                            interviewSuccess && <WeeklyCalendarView interviews={extractCalendarEvents(interviews.data.interviews)} />
 
                         }
                     </div>

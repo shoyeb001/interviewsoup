@@ -10,6 +10,9 @@ export const getInterviewTimeLeft = (
   interviewDate: string,
   interviewTime: string
 ) => {
+  if (!interviewDate || !interviewTime) {
+    return ""
+  }
   // Combine date + time
   const interviewDateTime = new Date(
     `${interviewDate.split("T")[0]}T${interviewTime}`
@@ -50,12 +53,16 @@ export const extractCalendarEvents = (
 ) => {
   return interviews.map((interview) => {
     // Combine date + time
+    const now = new Date();
+
     const start = new Date(
       `${interview.interview_date.split("T")[0]}T${interview.interview_time}`
     );
 
     // 1 hour interview duration
     const end = new Date(start.getTime() + 60 * 60 * 1000);
+    const isExpired = end.getTime() < now.getTime();
+
 
     return {
       id: interview.id,
@@ -63,7 +70,7 @@ export const extractCalendarEvents = (
       start,
       end,
       resource: interview,
-      bgColor: '#d2e3fc',
+      bgColor: isExpired ? "#e2e8f0" : "#2563eb",
       textColor: '#1e40af',
     };
   });
