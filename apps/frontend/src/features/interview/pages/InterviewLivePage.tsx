@@ -1,9 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import InterviewHeader from "../components/InterviewHeader";
 import EditorWorkspace from "../components/EditorWorkspace";
 import Sidebar from "../components/InterviewSidebar";
+import { socketService } from "../services/socket.service";
+import { useParams } from "react-router";
 
 export default function InterviewLivePage() {
+    const socket = socketService.getSocket();
+    const { roomId } = useParams();
+
+    useEffect(() => {
+
+        socket.emit("room:join", {
+            roomId
+        });
+
+    }, [roomId]);
     return (
         <div className="flex flex-col h-screen bg-[#FCF8F5] text-slate-900 font-sans overflow-hidden">
             <InterviewHeader />

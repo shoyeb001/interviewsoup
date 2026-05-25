@@ -18,7 +18,10 @@ export const interviewApi = baseApi.injectEndpoints({
             query: () => '/interview/upcoming',
             providesTags: ["CurrentInterviews"]
         }),
+        getInterviewDetailsByRoomId: builder.query({
+            query: (roomId) => `/interview/details/roomId/${roomId}`
+        })
     })
 })
 
-export const { useScheduleInterviewMutation, useGetAllInterviewsQuery, useGetUpcomingInterviewsQuery } = interviewApi;
+export const { useScheduleInterviewMutation, useGetAllInterviewsQuery, useGetUpcomingInterviewsQuery, useGetInterviewDetailsByRoomIdQuery } = interviewApi;

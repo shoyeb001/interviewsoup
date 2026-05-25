@@ -1,17 +1,46 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { Button } from "@/components/ui/button";
 import { Settings, Play, TerminalSquare } from "lucide-react";
-
+import { socketService } from "../services/socket.service";
+import { useParams } from "react-router";
 
 
 export default function EditorWorkspace() {
+  const { roomId } = useParams();
   const [code, setCode] = useState<any>();
   const [output, setOutput] = useState("Waiting for execution...");
-
+  const socket = socketService.getSocket();
   const handleRunCode = () => {
     setOutput("Executing...\n\n[0, 1]\n\nExecution finished.");
   };
+
+  useEffect(() => {
+    socket.on(
+      "editor:code-update",
+      (incomingCode: string) => {
+        console.log(incomingCode, "code update")
+        setCode(incomingCode);
+      }
+    );
+    return () => {
+      socket.off(
+        "editor:code-update"
+      )
+    }
+  }, [])
+
+  const handelCodeChange = (value: any) => {
+    const updatedCode = value;
+    setCode(updatedCode);
+    socket.emit(
+      "editor:code-change",
+      {
+        roomId,
+        code: updatedCode
+      }
+    )
+  }
 
   return (
     <div className="flex flex-col h-full gap-4">
@@ -41,7 +70,7 @@ export default function EditorWorkspace() {
             defaultLanguage="java"
             theme="vs-dark"
             value={code}
-            onChange={(value) => setCode(value || "")}
+            onChange={handelCodeChange}
             options={{
               minimap: { enabled: false },
               fontSize: 14,
