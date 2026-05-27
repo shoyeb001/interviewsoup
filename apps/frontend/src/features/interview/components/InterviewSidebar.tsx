@@ -1,22 +1,25 @@
-import React from "react";
 import VideoFeed from "./VideoFeed";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { useWebRTC } from "../hooks/useWebRTC";
 
-export default function Sidebar() {
+export default function Sidebar({ roomId }: { roomId: string }) {
+  const { localVideoRef, remoteVideoRef } = useWebRTC(roomId);
   return (
     <div className="flex flex-col gap-4 h-full">
       {/* Video Feeds Container */}
       <div className="flex flex-col gap-3">
+
         <VideoFeed
-          name="Sarah (You)"
-          imageUrl="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600"
-          isMuted={true}
+          name="Interviewer"
+          videoRef={remoteVideoRef}
+          showSignal
         />
+
         <VideoFeed
           name="Jamie L."
-          imageUrl="https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&q=80&w=600"
+          videoRef={localVideoRef}
           showSignal={true}
         />
       </div>

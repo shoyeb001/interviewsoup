@@ -24,7 +24,7 @@ export default function InterviewLivePage() {
                     <EditorWorkspace />
                 </section>
                 <aside className="w-96 flex flex-col shrink-0 overflow-y-auto">
-                    <Sidebar />
+                    <Sidebar roomId={roomId || ""} />
                 </aside>
             </main>
         </div>

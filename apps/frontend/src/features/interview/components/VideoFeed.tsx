@@ -3,17 +3,19 @@ import { MicOff, SignalHigh } from "lucide-react";
 
 interface VideoFeedProps {
   name: string,
-  imageUrl: string,
+  videoRef: any,
   isMuted?: boolean,
   showSignal?: boolean
 }
-export default function VideoFeed({ name, imageUrl, isMuted = false, showSignal = false }: VideoFeedProps) {
+export default function VideoFeed({ name, videoRef, isMuted = false, showSignal = false }: VideoFeedProps) {
   return (
     <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-[#E8DFD8] bg-stone-900 shadow-sm">
-      <img
-        src={imageUrl}
-        alt={name}
-        className="w-full h-full object-cover opacity-90"
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        muted={isMuted}
+        className="w-full h-full object-cover"
       />
 
       {/* Top right icon */}

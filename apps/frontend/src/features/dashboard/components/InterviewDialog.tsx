@@ -7,6 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Clock, LayoutList, Video } from "lucide-react";
 import { getInterviewTimeLeft } from "@/lib/utils";
+import { useNavigate } from "react-router";
 
 interface InterviewPopupProps {
     isOpen: boolean;
@@ -15,9 +16,16 @@ interface InterviewPopupProps {
 }
 
 export default function InterviewPopup({ isOpen, onOpenChange, data }: InterviewPopupProps) {
+    const navigate = useNavigate();
     function isExpire(date: any) {
         const now = new Date();
-        return now.getDate() > date;
+        console.log(now.getDate(), "date");
+        const inDate = new Date(date).getDate();
+        console.log(inDate, "now date")
+        return now.getDate() >= inDate;
+    }
+    const handelJoin = (roomId: string) => {
+        navigate(`/interview/live/${roomId}`)
     }
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -64,7 +72,8 @@ export default function InterviewPopup({ isOpen, onOpenChange, data }: Interview
                     {
                         isExpire(data?.interview_date) ? (
                             <Button
-                                className="w-full h-12 bg-[#e05d14] hover:bg-[#c95210] text-white rounded-lg text-base font-semibold shadow-none flex items-center justify-center gap-2"
+                                type="button"
+                                className="w-full h-12 bg-[#e05d14] hover:bg-[#c95210] text-white rounded-lg text-base font-semibold shadow-none flex items-center justify-center gap-2" onClick={() => handelJoin(data?.room_id)}
                             >
                                 <Video className="w-5 h-5" />
                                 Join Call
