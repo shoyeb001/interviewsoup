@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 import { Button } from "@/components/ui/button";
 import { Settings, Play, TerminalSquare } from "lucide-react";
@@ -11,16 +11,24 @@ export default function EditorWorkspace() {
   const [code, setCode] = useState<any>();
   const [output, setOutput] = useState("Waiting for execution...");
   const socket = socketService.getSocket();
+  useEffect(() => {
+    latestCodeRef.current = code;
+  }, [code]);
   const handleRunCode = () => {
     setOutput("Executing...\n\n[0, 1]\n\nExecution finished.");
   };
+  const latestCodeRef = useRef<string>(code);
+
 
   useEffect(() => {
     socket.on(
       "editor:code-update",
       (incomingCode: string) => {
         console.log(incomingCode, "code update")
-        setCode(incomingCode);
+        if (incomingCode !== latestCodeRef.current) {
+          setCode(incomingCode);
+        }
+        // setCode(incomingCode);
       }
     );
     return () => {
@@ -28,7 +36,7 @@ export default function EditorWorkspace() {
         "editor:code-update"
       )
     }
-  }, [])
+  }, [socket])
 
   const handelCodeChange = (value: any) => {
     const updatedCode = value;

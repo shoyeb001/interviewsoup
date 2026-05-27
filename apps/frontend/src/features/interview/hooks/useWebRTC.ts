@@ -1,474 +1,474 @@
-// src/features/interview/hooks/useWebRTC.ts
-
-import {
-    useEffect,
-    useRef,
-    useState,
-} from "react";
-
-import { socketService } from "../services/socket.service";
-
-export const useWebRTC = (
-    roomId: string
-) => {
-
-    /*
-    =================================
-    SOCKET
-    =================================
-    */
-
-    const socket =
-        socketService.getSocket();
-
-    /*
-    =================================
-    VIDEO REFS
-    =================================
-    */
-
-    const localVideoRef =
-        useRef<HTMLVideoElement>(null);
-
-    const remoteVideoRef =
-        useRef<HTMLVideoElement>(null);
-
-    /*
-    =================================
-    PEER CONNECTION
-    =================================
-    */
-
-    const peerConnectionRef =
-        useRef<RTCPeerConnection | null>(
-            null
-        );
-
-    /*
-    =================================
-    LOCAL STREAM
-    =================================
-    */
-
-    const [localStream, setLocalStream] =
-        useState<MediaStream | null>(
-            null
-        );
-
-    /*
-    =================================
-    INITIALIZE WEBRTC
-    =================================
-    */
-
-    useEffect(() => {
-
-        const init = async () => {
-
-            try {
-
-                /*
-                ==========================
-                CREATE PEER CONNECTION
-                ==========================
-                */
-
-                peerConnectionRef.current =
-                    new RTCPeerConnection({
-
-                        iceServers: [
-                            {
-                                urls:
-                                    "stun:stun.l.google.com:19302",
-                            },
-                        ],
-
-                    });
-
-                const peer =
-                    peerConnectionRef.current;
-
-                /*
-                ==========================
-                GET USER MEDIA
-                ==========================
-                */
-
-                const stream =
-                    await navigator
-                        .mediaDevices
-                        .getUserMedia({
-                            video: true,
-                            audio: true,
-                        });
+// // src/features/interview/hooks/useWebRTC.ts
+
+// import {
+//     useEffect,
+//     useRef,
+//     useState,
+// } from "react";
+
+// import { socketService } from "../services/socket.service";
+
+// export const useWebRTC = (
+//     roomId: string
+// ) => {
+
+//     /*
+//     =================================
+//     SOCKET
+//     =================================
+//     */
+
+//     const socket =
+//         socketService.getSocket();
+
+//     /*
+//     =================================
+//     VIDEO REFS
+//     =================================
+//     */
+
+//     const localVideoRef =
+//         useRef<HTMLVideoElement>(null);
+
+//     const remoteVideoRef =
+//         useRef<HTMLVideoElement>(null);
+
+//     /*
+//     =================================
+//     PEER CONNECTION
+//     =================================
+//     */
+
+//     const peerConnectionRef =
+//         useRef<RTCPeerConnection | null>(
+//             null
+//         );
+
+//     /*
+//     =================================
+//     LOCAL STREAM
+//     =================================
+//     */
+
+//     const [localStream, setLocalStream] =
+//         useState<MediaStream | null>(
+//             null
+//         );
+
+//     /*
+//     =================================
+//     INITIALIZE WEBRTC
+//     =================================
+//     */
+
+//     useEffect(() => {
+
+//         const init = async () => {
+
+//             try {
+
+//                 /*
+//                 ==========================
+//                 CREATE PEER CONNECTION
+//                 ==========================
+//                 */
+
+//                 peerConnectionRef.current =
+//                     new RTCPeerConnection({
+
+//                         iceServers: [
+//                             {
+//                                 urls:
+//                                     "stun:stun.l.google.com:19302",
+//                             },
+//                         ],
+
+//                     });
+
+//                 const peer =
+//                     peerConnectionRef.current;
+
+//                 /*
+//                 ==========================
+//                 GET USER MEDIA
+//                 ==========================
+//                 */
+
+//                 const stream =
+//                     await navigator
+//                         .mediaDevices
+//                         .getUserMedia({
+//                             video: true,
+//                             audio: true,
+//                         });
 
-                setLocalStream(stream);
+//                 setLocalStream(stream);
 
-                /*
-                ==========================
-                SET LOCAL VIDEO
-                ==========================
-                */
+//                 /*
+//                 ==========================
+//                 SET LOCAL VIDEO
+//                 ==========================
+//                 */
 
-                if (
-                    localVideoRef.current
-                ) {
+//                 if (
+//                     localVideoRef.current
+//                 ) {
 
-                    localVideoRef.current.srcObject =
-                        stream;
+//                     localVideoRef.current.srcObject =
+//                         stream;
 
-                }
+//                 }
 
-                /*
-                ==========================
-                ADD TRACKS
-                ==========================
-                */
+//                 /*
+//                 ==========================
+//                 ADD TRACKS
+//                 ==========================
+//                 */
 
-                stream.getTracks().forEach(
-                    (track) => {
+//                 stream.getTracks().forEach(
+//                     (track) => {
 
-                        peer.addTrack(
-                            track,
-                            stream
-                        );
+//                         peer.addTrack(
+//                             track,
+//                             stream
+//                         );
 
-                    }
-                );
+//                     }
+//                 );
 
-                /*
-                ==========================
-                REMOTE TRACK
-                ==========================
-                */
+//                 /*
+//                 ==========================
+//                 REMOTE TRACK
+//                 ==========================
+//                 */
 
-                peer.ontrack = (
-                    event
-                ) => {
+//                 peer.ontrack = (
+//                     event
+//                 ) => {
 
-                    console.log(
-                        "REMOTE TRACK RECEIVED"
-                    );
+//                     console.log(
+//                         "REMOTE TRACK RECEIVED"
+//                     );
 
-                    const remoteStream =
-                        event.streams[0];
+//                     const remoteStream =
+//                         event.streams[0];
 
-                    if (
-                        remoteVideoRef.current
-                    ) {
+//                     if (
+//                         remoteVideoRef.current
+//                     ) {
 
-                        remoteVideoRef.current.srcObject =
-                            remoteStream;
+//                         remoteVideoRef.current.srcObject =
+//                             remoteStream;
 
-                    }
+//                     }
 
-                };
+//                 };
 
-                /*
-                ==========================
-                ICE CANDIDATE
-                ==========================
-                */
+//                 /*
+//                 ==========================
+//                 ICE CANDIDATE
+//                 ==========================
+//                 */
 
-                peer.onicecandidate =
-                    (event) => {
+//                 peer.onicecandidate =
+//                     (event) => {
 
-                        if (
-                            event.candidate
-                        ) {
+//                         if (
+//                             event.candidate
+//                         ) {
 
-                            console.log(
-                                "Sending ICE Candidate"
-                            );
+//                             console.log(
+//                                 "Sending ICE Candidate"
+//                             );
 
-                            socket.emit(
-                                "webrtc:ice-candidate",
-                                {
-                                    roomId,
-                                    candidate:
-                                        event.candidate,
-                                }
-                            );
+//                             socket.emit(
+//                                 "webrtc:ice-candidate",
+//                                 {
+//                                     roomId,
+//                                     candidate:
+//                                         event.candidate,
+//                                 }
+//                             );
 
-                        }
+//                         }
 
-                    };
+//                     };
 
-            } catch (error) {
+//             } catch (error) {
 
-                console.log(
-                    "WebRTC Init Error:",
-                    error
-                );
+//                 console.log(
+//                     "WebRTC Init Error:",
+//                     error
+//                 );
 
-            }
+//             }
 
-        };
+//         };
 
-        init();
+//         init();
 
-    }, [roomId]);
+//     }, [roomId]);
 
-    /*
-    =================================
-    CREATE OFFER
-    =================================
-    */
+//     /*
+//     =================================
+//     CREATE OFFER
+//     =================================
+//     */
 
-    useEffect(() => {
+//     useEffect(() => {
 
-        socket.on(
-            "room:user-joined",
+//         socket.on(
+//             "room:user-joined",
 
-            async () => {
+//             async () => {
 
-                try {
+//                 try {
 
-                    console.log(
-                        "Creating Offer"
-                    );
+//                     console.log(
+//                         "Creating Offer"
+//                     );
 
-                    const peer =
-                        peerConnectionRef.current;
+//                     const peer =
+//                         peerConnectionRef.current;
 
-                    if (!peer) return;
+//                     if (!peer) return;
 
-                    const offer =
-                        await peer.createOffer();
+//                     const offer =
+//                         await peer.createOffer();
 
-                    await peer.setLocalDescription(
-                        offer
-                    );
+//                     await peer.setLocalDescription(
+//                         offer
+//                     );
 
-                    socket.emit(
-                        "webrtc:offer",
-                        {
-                            roomId,
-                            offer,
-                        }
-                    );
+//                     socket.emit(
+//                         "webrtc:offer",
+//                         {
+//                             roomId,
+//                             offer,
+//                         }
+//                     );
 
-                } catch (error) {
+//                 } catch (error) {
 
-                    console.log(
-                        "Offer Creation Error:",
-                        error
-                    );
+//                     console.log(
+//                         "Offer Creation Error:",
+//                         error
+//                     );
 
-                }
+//                 }
 
-            }
-        );
+//             }
+//         );
 
-        return () => {
+//         return () => {
 
-            socket.off(
-                "room:user-joined"
-            );
+//             socket.off(
+//                 "room:user-joined"
+//             );
 
-        };
+//         };
 
-    }, [roomId]);
+//     }, [roomId]);
 
-    /*
-    =================================
-    RECEIVE OFFER
-    =================================
-    */
+//     /*
+//     =================================
+//     RECEIVE OFFER
+//     =================================
+//     */
 
-    useEffect(() => {
+//     useEffect(() => {
 
-        socket.on(
-            "webrtc:offer",
+//         socket.on(
+//             "webrtc:offer",
 
-            async (
-                offer: RTCSessionDescriptionInit
-            ) => {
+//             async (
+//                 offer: RTCSessionDescriptionInit
+//             ) => {
 
-                try {
+//                 try {
 
-                    console.log(
-                        "Offer Received"
-                    );
+//                     console.log(
+//                         "Offer Received"
+//                     );
 
-                    const peer =
-                        peerConnectionRef.current;
+//                     const peer =
+//                         peerConnectionRef.current;
 
-                    if (!peer) return;
+//                     if (!peer) return;
 
-                    await peer.setRemoteDescription(
-                        new RTCSessionDescription(
-                            offer
-                        )
-                    );
+//                     await peer.setRemoteDescription(
+//                         new RTCSessionDescription(
+//                             offer
+//                         )
+//                     );
 
-                    const answer =
-                        await peer.createAnswer();
+//                     const answer =
+//                         await peer.createAnswer();
 
-                    await peer.setLocalDescription(
-                        answer
-                    );
+//                     await peer.setLocalDescription(
+//                         answer
+//                     );
 
-                    socket.emit(
-                        "webrtc:answer",
-                        {
-                            roomId,
-                            answer,
-                        }
-                    );
+//                     socket.emit(
+//                         "webrtc:answer",
+//                         {
+//                             roomId,
+//                             answer,
+//                         }
+//                     );
 
-                } catch (error) {
+//                 } catch (error) {
 
-                    console.log(
-                        "Receive Offer Error:",
-                        error
-                    );
+//                     console.log(
+//                         "Receive Offer Error:",
+//                         error
+//                     );
 
-                }
+//                 }
 
-            }
-        );
+//             }
+//         );
 
-        return () => {
+//         return () => {
 
-            socket.off(
-                "webrtc:offer"
-            );
+//             socket.off(
+//                 "webrtc:offer"
+//             );
 
-        };
+//         };
 
-    }, [roomId]);
+//     }, [roomId]);
 
-    /*
-    =================================
-    RECEIVE ANSWER
-    =================================
-    */
+//     /*
+//     =================================
+//     RECEIVE ANSWER
+//     =================================
+//     */
 
-    useEffect(() => {
+//     useEffect(() => {
 
-        socket.on(
-            "webrtc:answer",
+//         socket.on(
+//             "webrtc:answer",
 
-            async (
-                answer: RTCSessionDescriptionInit
-            ) => {
+//             async (
+//                 answer: RTCSessionDescriptionInit
+//             ) => {
 
-                try {
+//                 try {
 
-                    console.log(
-                        "Answer Received"
-                    );
+//                     console.log(
+//                         "Answer Received"
+//                     );
 
-                    const peer =
-                        peerConnectionRef.current;
+//                     const peer =
+//                         peerConnectionRef.current;
 
-                    if (!peer) return;
+//                     if (!peer) return;
 
-                    await peer.setRemoteDescription(
-                        new RTCSessionDescription(
-                            answer
-                        )
-                    );
+//                     await peer.setRemoteDescription(
+//                         new RTCSessionDescription(
+//                             answer
+//                         )
+//                     );
 
-                } catch (error) {
+//                 } catch (error) {
 
-                    console.log(
-                        "Receive Answer Error:",
-                        error
-                    );
+//                     console.log(
+//                         "Receive Answer Error:",
+//                         error
+//                     );
 
-                }
+//                 }
 
-            }
-        );
+//             }
+//         );
 
-        return () => {
+//         return () => {
 
-            socket.off(
-                "webrtc:answer"
-            );
+//             socket.off(
+//                 "webrtc:answer"
+//             );
 
-        };
+//         };
 
-    }, []);
+//     }, []);
 
-    /*
-    =================================
-    RECEIVE ICE CANDIDATE
-    =================================
-    */
+//     /*
+//     =================================
+//     RECEIVE ICE CANDIDATE
+//     =================================
+//     */
 
-    useEffect(() => {
+//     useEffect(() => {
 
-        socket.on(
-            "webrtc:ice-candidate",
+//         socket.on(
+//             "webrtc:ice-candidate",
 
-            async (
-                candidate: RTCIceCandidateInit
-            ) => {
+//             async (
+//                 candidate: RTCIceCandidateInit
+//             ) => {
 
-                try {
+//                 try {
 
-                    console.log(
-                        "ICE Candidate Received"
-                    );
+//                     console.log(
+//                         "ICE Candidate Received"
+//                     );
 
-                    const peer =
-                        peerConnectionRef.current;
+//                     const peer =
+//                         peerConnectionRef.current;
 
-                    if (!peer) return;
+//                     if (!peer) return;
 
-                    await peer.addIceCandidate(
-                        new RTCIceCandidate(
-                            candidate
-                        )
-                    );
+//                     await peer.addIceCandidate(
+//                         new RTCIceCandidate(
+//                             candidate
+//                         )
+//                     );
 
-                } catch (error) {
+//                 } catch (error) {
 
-                    console.log(
-                        "ICE Candidate Error:",
-                        error
-                    );
+//                     console.log(
+//                         "ICE Candidate Error:",
+//                         error
+//                     );
 
-                }
+//                 }
 
-            }
-        );
+//             }
+//         );
 
-        return () => {
+//         return () => {
 
-            socket.off(
-                "webrtc:ice-candidate"
-            );
+//             socket.off(
+//                 "webrtc:ice-candidate"
+//             );
 
-        };
+//         };
 
-    }, []);
+//     }, []);
 
-    /*
-    =================================
-    CLEANUP
-    =================================
-    */
+//     /*
+//     =================================
+//     CLEANUP
+//     =================================
+//     */
 
-    useEffect(() => {
+//     useEffect(() => {
 
-        return () => {
+//         return () => {
 
-            peerConnectionRef.current?.close();
+//             peerConnectionRef.current?.close();
 
-            localStream?.getTracks().forEach(
-                (track) => track.stop()
-            );
+//             localStream?.getTracks().forEach(
+//                 (track) => track.stop()
+//             );
 
-        };
+//         };
 
-    }, [localStream]);
+//     }, [localStream]);
 
-    return {
-        localVideoRef,
-        remoteVideoRef,
-    };
-};
+//     return {
+//         localVideoRef,
+//         remoteVideoRef,
+//     };
+// };

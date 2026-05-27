@@ -1,8 +1,7 @@
-import type { Server } from "socket.io";
-
+import type { Server, Socket } from "socket.io";
 export const registerRoomHandlers = (
     io: Server,
-    socket: any
+    socket: Socket
 ) => {
     socket.on(
         "room:join",
@@ -25,15 +24,12 @@ export const registerRoomHandlers = (
             ONLY notify existing user
             when second user joins
             */
-
-            if (numberOfUsers === 2) {
-
-                socket.to(roomId).emit(
-                    "room:user-joined"
-                );
-
-            }
+            socket.to(roomId).emit("user:joined", socket.id)
         }
     );
+
+    socket.on('disconnect', () => {
+        console.log(`User disconnected: ${socket.id}`)
+    })
 
 }
