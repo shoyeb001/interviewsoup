@@ -11,7 +11,7 @@ const initialUserState: UserState = {
     name: "",
     email: "",
     role: "",
-    token: "",
+    token: localStorage.getItem("token") || "",
     isVerified: false
 }
 export const userSlice = createSlice({

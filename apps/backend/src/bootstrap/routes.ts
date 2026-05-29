@@ -2,7 +2,9 @@
 import { type Express } from "express";
 import authRoutes from "../modules/auth/routes/auth.routes.ts";
 import userRoutes from "../modules/user/routes/user.route.ts";
+import interviewRoutes from "../modules/interview/routes/interview.route.ts"
 export const registerRoutes = (app: Express) => {
     app.use("/api/v1/auth", authRoutes);
     app.use("/api/v1/user", userRoutes);
+    app.use("/api/v1/interview", interviewRoutes);
 }

@@ -2,9 +2,7 @@ import jwt, { type JwtPayload } from "jsonwebtoken";
 import { type NextFunction, type Response, type Request } from "express";
 import { UserService } from "../../modules/user/services/user.service.ts";
 import { type AuthRequest } from "../interfaces/userInterface.ts";
-// export interface AuthRequest extends Request {
-//   user?: any;
-// }
+
 export const authMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
     const userService = new UserService();
     try {
@@ -25,7 +23,7 @@ export const authMiddleware = async (req: AuthRequest, res: Response, next: Next
         const userId = decoded.id;
         console.log("Decoded JWT:", decoded);
         const user = await userService.getUser(userId);
-        req.user = user;
+        req.user = { ...user, id: userId };
         next();
     } catch (error) {
         return res.status(403).json(
