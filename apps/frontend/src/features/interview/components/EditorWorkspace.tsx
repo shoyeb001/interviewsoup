@@ -11,44 +11,68 @@ export default function EditorWorkspace() {
   const [code, setCode] = useState<any>();
   const [output, setOutput] = useState("Waiting for execution...");
   const socket = socketService.getSocket();
-  useEffect(() => {
-    latestCodeRef.current = code;
-  }, [code]);
+  const latestCodeRef = useRef<string>(code);
+  const isRemoteUpdate = useRef(false); // 👈 key addition
+
+
+  // useEffect(() => {
+  //   latestCodeRef.current = code;
+  // }, [code]);
   const handleRunCode = () => {
     setOutput("Executing...\n\n[0, 1]\n\nExecution finished.");
   };
-  const latestCodeRef = useRef<string>(code);
 
 
+  // useEffect(() => {
+  //   socket.on(
+  //     "editor:code-update",
+  //     (incomingCode: string) => {
+  //       console.log(incomingCode, "code update")
+  //       // if (incomingCode !== latestCodeRef.current) {
+  //       setCode(incomingCode);
+  //       // }
+  //       // setCode(incomingCode);
+  //     }
+  //   );
+  //   return () => {
+  //     socket.off(
+  //       "editor:code-update"
+  //     )
+  //   }
+  // }, [socket])
   useEffect(() => {
-    socket.on(
-      "editor:code-update",
-      (incomingCode: string) => {
-        console.log(incomingCode, "code update")
-        if (incomingCode !== latestCodeRef.current) {
-          setCode(incomingCode);
-        }
-        // setCode(incomingCode);
-      }
-    );
-    return () => {
-      socket.off(
-        "editor:code-update"
-      )
-    }
-  }, [socket])
+    // Log ALL socket events to see what's actually arriving
+    socket.onAny((event, ...args) => {
+      console.log('[SOCKET IN]', event, args);
+    });
 
+    socket.on("editor:code-update", (incomingCode: string) => {
+      console.log('[editor:code-update] fired, value:', incomingCode);
+      setCode(incomingCode);
+    });
+
+    return () => {
+      socket.offAny();
+      socket.off("editor:code-update");
+    };
+  }, [socket]);
+
+  // const handelCodeChange = (value: any) => {
+  //   const updatedCode = value;
+  //   setCode(updatedCode);
+  //   socket.emit(
+  //     "editor:code-change",
+  //     {
+  //       roomId,
+  //       code: updatedCode
+  //     }
+  //   )
+  // }
   const handelCodeChange = (value: any) => {
-    const updatedCode = value;
-    setCode(updatedCode);
-    socket.emit(
-      "editor:code-change",
-      {
-        roomId,
-        code: updatedCode
-      }
-    )
-  }
+    setCode(value);
+    console.log('[EMIT] editor:code-change to room:', roomId, '| value:', value?.slice(0, 30));
+    socket.emit("editor:code-change", { roomId, code: value });
+  };
 
   return (
     <div className="flex flex-col h-full gap-4">

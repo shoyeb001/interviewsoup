@@ -87,7 +87,7 @@ export default function InterviewLivePage() {
                 localVideoRef.current.srcObject = stream;
             }
             // tell the server we arrived in the room
-            socket.emit('room:join', roomId);
+            socket.emit('room:join', { roomId });
             //handel when a new user join room
             socket.on('user:joined', async (newUserId: string) => {
                 const peerConnection = createPeerConnection(newUserId, stream);
