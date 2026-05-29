@@ -28,6 +28,11 @@ export const registerRoomHandlers = (
         }
     );
 
+    socket.on('room:leave', ({ roomId }: { roomId: string }) => {
+        socket.to(roomId).emit('user:left', socket.id);
+        socket.leave(roomId);
+    })
+
     socket.on('disconnect', () => {
         console.log(`User disconnected: ${socket.id}`)
     })
