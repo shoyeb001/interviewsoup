@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Settings, Play, TerminalSquare } from "lucide-react";
 import { socketService } from "../services/socket.service";
 import { useParams } from "react-router";
+import notification from "@/shared/toast";
 
 
 export default function EditorWorkspace() {
@@ -13,7 +14,6 @@ export default function EditorWorkspace() {
   const socket = socketService.getSocket();
   const latestCodeRef = useRef<string>(code);
   const isRemoteUpdate = useRef(false); // 👈 key addition
-
 
   // useEffect(() => {
   //   latestCodeRef.current = code;
@@ -41,7 +41,6 @@ export default function EditorWorkspace() {
   //   }
   // }, [socket])
   useEffect(() => {
-    // Log ALL socket events to see what's actually arriving
     socket.onAny((event, ...args) => {
       console.log('[SOCKET IN]', event, args);
     });

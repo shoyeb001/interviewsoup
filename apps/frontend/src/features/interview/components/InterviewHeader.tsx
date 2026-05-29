@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, PhoneOff } from "lucide-react";
-const InterviewHeader = () => {
+import { useEffect } from "react";
+import { socketService } from "../services/socket.service";
+
+const InterviewHeader = ({ leaveCall }: { leaveCall: () => void }) => {
+
     return (
         <header className="flex items-center justify-between px-6 py-3 bg-[#FCF8F5] border-b border-[#E8DFD8]">
             <div className="flex items-center gap-6">
@@ -22,7 +26,7 @@ const InterviewHeader = () => {
                         LIVE
                     </Badge>
                 </div>
-                <Button className="bg-[#C53030] hover:bg-red-800 text-white rounded-md flex items-center gap-2 px-4 py-2">
+                <Button className="bg-[#C53030] hover:bg-red-800 text-white rounded-md flex items-center gap-2 px-4 py-2" onClick={leaveCall}>
                     <PhoneOff className="w-4 h-4" />
                     Leave Call
                 </Button>

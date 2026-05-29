@@ -5,9 +5,11 @@ import Sidebar from "../components/InterviewSidebar";
 import { socketService } from "../services/socket.service";
 import { useParams } from "react-router";
 import type { Socket } from "socket.io-client";
+import { useNavigate } from "react-router";
 
 export default function InterviewLivePage() {
     const socket: Socket = socketService.getSocket();
+    const navigate = useNavigate();
     const ICE_SERVERS = {
         iceServers: [
             { urls: 'stun:stun.l.google.com:19302' },
@@ -38,6 +40,15 @@ export default function InterviewLivePage() {
             videoTrack.enabled = !videoTrack.enabled;
             setIsCameraOn(videoTrack.enabled);
         }
+    };
+    const leaveCall = () => {
+        const stream = localVideoRef.current?.srcObject as MediaStream;
+        stream?.getTracks().forEach(track => track.stop());
+        peerConnectionRef.current?.close();
+        peerConnectionRef.current = null;
+        socket.emit('room:leave', { roomId });
+        socket.emit('room:disconnect', roomId);
+        navigate('/dashboard'); // or wherever
     };
     const processQueue = async () => {
         const pc = peerConnectionRef.current;
@@ -136,6 +147,14 @@ export default function InterviewLivePage() {
                 }
             });
         })
+        socket.on('user:left', () => {
+            // Clear remote video
+            if (remoteVideoRef.current) {
+                remoteVideoRef.current.srcObject = null;
+            }
+            peerConnectionRef.current?.close();
+            peerConnectionRef.current = null;
+        });
 
         // socket.emit("room:join", {
         //     roomId
@@ -147,13 +166,16 @@ export default function InterviewLivePage() {
             socket.off('answer');
             socket.off('ice:candidate');
             socket.off('offer');
+            socket.off('user:left')
             peerConnectionRef.current?.close()
         }
 
     }, [roomId]);
+
+
     return (
         <div className="flex flex-col h-screen bg-[#FCF8F5] text-slate-900 font-sans overflow-hidden">
-            <InterviewHeader />
+            <InterviewHeader leaveCall={leaveCall} />
             <main className="flex flex-1 overflow-hidden p-4 gap-4">
                 <section className="flex-1 flex flex-col min-w-0">
                     <EditorWorkspace />
